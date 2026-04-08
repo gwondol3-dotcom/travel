@@ -14,7 +14,7 @@
         }
 
         body {
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
             background-color: var(--background-color);
             color: var(--text-color);
             line-height: 1.6;
@@ -37,12 +37,13 @@
             margin-bottom: 30px;
         }
 
-        /* 로그인 섹션 스타일 */
+        /* 로그인 섹션 */
         .auth-section {
             text-align: center;
             margin-bottom: 20px;
             padding: 20px;
-            border-bottom: 1px solid var(--border-color);
+            background-color: #f8f9fa;
+            border-radius: 8px;
         }
 
         .user-info {
@@ -50,17 +51,18 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            font-weight: bold;
         }
 
         .user-info img {
             width: 40px;
+            height: 40px;
             border-radius: 50%;
         }
 
-        /* 메인 컨텐츠 (기본적으로 숨김) */
         #mainContent {
-            display: none;
+            display: none; /* 기본적으로 메인 콘텐츠는 숨김 */
         }
 
         .input-group {
@@ -79,19 +81,12 @@
             border: 1px solid var(--border-color);
             border-radius: 8px;
             box-sizing: border-box;
-            font-family: inherit;
             font-size: 14px;
         }
 
         textarea {
             resize: vertical;
             min-height: 200px;
-        }
-
-        input[type="password"]:focus, textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
         }
 
         .btn {
@@ -102,15 +97,22 @@
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            transition: background-color 0.3s;
-            margin-top: 10px;
+            transition: background-color 0.2s;
         }
 
         .btn-primary { background-color: var(--primary-color); color: white; }
         .btn-primary:hover { background-color: #357abd; }
         .btn-primary:disabled { background-color: #a0c4eb; cursor: not-allowed; }
 
-        .btn-outline { background-color: transparent; border: 1px solid var(--border-color); color: #666; width: auto; padding: 8px 15px; font-size: 13px; }
+        .btn-outline { 
+            background-color: white; 
+            border: 1px solid #ccc; 
+            color: #333; 
+            width: auto; 
+            padding: 8px 16px; 
+            font-size: 14px; 
+        }
+        .btn-outline:hover { background-color: #f0f0f0; }
 
         .result-section {
             margin-top: 30px;
@@ -139,15 +141,6 @@
             color: var(--primary-color);
             font-weight: bold;
         }
-
-        footer {
-            text-align: center;
-            margin-top: 40px;
-            color: #888;
-            font-size: 14px;
-            border-top: 1px solid var(--border-color);
-            padding-top: 15px;
-        }
     </style>
 </head>
 <body>
@@ -157,13 +150,13 @@
 
     <div class="auth-section">
         <div id="loggedOutUI">
-            <p>평가기를 사용하려면 로그인이 필요합니다.</p>
-            <button class="btn btn-primary" id="loginBtn">구글로 로그인하기</button>
+            <p>기행문을 평가하려면 먼저 로그인해 주세요.</p>
+            <button class="btn btn-primary" id="loginBtn" style="max-width: 200px;">구글로 로그인하기</button>
         </div>
         <div id="loggedInUI" style="display: none;">
             <div class="user-info">
-                <img id="userPhoto" src="" alt="프로필">
-                <span id="userName"></span>님 환영합니다!
+                <img id="userPhoto" src="" alt="프로필 사진">
+                <span id="userName"></span>님, 환영합니다!
             </div>
             <button class="btn btn-outline" id="logoutBtn">로그아웃</button>
         </div>
@@ -171,13 +164,13 @@
     
     <div id="mainContent">
         <div class="input-group">
-            <label for="apiKey">Google AI Studio API Key</label>
-            <input type="password" id="apiKey" placeholder="발급받은 API 키를 입력하세요">
+            <label for="apiKey">Google Gemini API Key</label>
+            <input type="password" id="apiKey" placeholder="Google AI Studio에서 발급받은 API 키를 입력하세요">
         </div>
 
         <div class="input-group">
             <label for="travelogue">기행문 내용</label>
-            <textarea id="travelogue" placeholder="평가받을 기행문을 여기에 작성하거나 붙여넣으세요..."></textarea>
+            <textarea id="travelogue" placeholder="평가받을 기행문을 여기에 붙여넣으세요..."></textarea>
         </div>
 
         <button id="submitBtn" class="btn btn-primary">기행문 평가하기</button>
@@ -188,121 +181,97 @@
 
         <div class="result-section" id="resultSection">
             <h2>평가 결과</h2>
-            <div class="result-card">
-                <h3>📝 맞춤법 및 띄어쓰기</h3>
-                <p id="resSpell"></p>
-            </div>
-            <div class="result-card">
-                <h3>🧠 논리적 문장 구조</h3>
-                <p id="resLogic"></p>
-            </div>
-            <div class="result-card">
-                <h3>📍 여정 (언제, 어디를, 어떻게)</h3>
-                <p id="resJourney"></p>
-            </div>
-            <div class="result-card">
-                <h3>👀 견문 (보고 들은 것)</h3>
-                <p id="resObservation"></p>
-            </div>
-            <div class="result-card">
-                <h3>💡 감상 (느끼고 생각한 것)</h3>
-                <p id="resImpression"></p>
-            </div>
+            <div class="result-card"><h3>📝 맞춤법 및 띄어쓰기</h3><p id="resSpell"></p></div>
+            <div class="result-card"><h3>🧠 논리적 문장 구조</h3><p id="resLogic"></p></div>
+            <div class="result-card"><h3>📍 여정 (언제, 어디를, 어떻게)</h3><p id="resJourney"></p></div>
+            <div class="result-card"><h3>👀 견문 (보고 들은 것)</h3><p id="resObservation"></p></div>
+            <div class="result-card"><h3>💡 감상 (느끼고 생각한 것)</h3><p id="resImpression"></p></div>
             <div class="result-card" style="border-left-color: #2ecc71; background-color: #f4fdf8;">
-                <h3 style="color: #27ae60;">🌟 종합 평가</h3>
-                <p id="resOverall"></p>
+                <h3 style="color: #27ae60;">🌟 종합 평가</h3><p id="resOverall"></p>
             </div>
         </div>
     </div>
-
-    <footer>만든이: gwond</footer>
 </div>
 
 <script type="module">
+    // 1. 파이어베이스 SDK 불러오기
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-    // TODO: 파이어베이스 콘솔에서 복사한 설정값으로 교체하세요!
+    // =====================================================================
+    // ⬇️ 여기에 본인의 파이어베이스 설정값을 붙여넣으세요 ⬇️
+    // =====================================================================
     const firebaseConfig = {
-    apiKey: "AIzaSyCHAw3DhNGs03uOdg9844RXbpFTih4YE7Y",
-    authDomain: "gen-lang-client-0316870199.firebaseapp.com",
-    projectId: "gen-lang-client-0316870199",
-    storageBucket: "gen-lang-client-0316870199.firebasestorage.app",
-    messagingSenderId: "805392873442",
-    appId: "1:805392873442:web:68c6f23f61833b05c6ebbb"
-  };
+        apiKey: "AIzaSyCHAw3DhNGs03uOdg9844RXbpFTih4YE7Y",
+        authDomain: "gen-lang-client-0316870199.firebaseapp.com",
+        projectId: "gen-lang-client-0316870199",
+        storageBucket: "gen-lang-client-0316870199.firebasestorage.app",
+        messagingSenderId: "805392873442",
+        appId: "1:805392873442:web:68c6f23f61833b05c6ebbb"
+    };
+    // =====================================================================
 
-    // 초기화
+    // 파이어베이스 초기화
     const app = initializeApp(firebaseConfig);
     const auth = getAuth();
     const provider = new GoogleAuthProvider();
 
-    // UI 요소
-    const loginBtn = document.getElementById('loginBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const loggedOutUI = document.getElementById('loggedOutUI');
-    const loggedInUI = document.getElementById('loggedInUI');
-    const mainContent = document.getElementById('mainContent');
-    const userName = document.getElementById('userName');
-    const userPhoto = document.getElementById('userPhoto');
+    // DOM 요소 가져오기
+    const UI = {
+        loginBtn: document.getElementById('loginBtn'),
+        logoutBtn: document.getElementById('logoutBtn'),
+        loggedOut: document.getElementById('loggedOutUI'),
+        loggedIn: document.getElementById('loggedInUI'),
+        main: document.getElementById('mainContent'),
+        userName: document.getElementById('userName'),
+        userPhoto: document.getElementById('userPhoto'),
+        submitBtn: document.getElementById('submitBtn'),
+        loading: document.getElementById('loadingIndicator'),
+        result: document.getElementById('resultSection')
+    };
 
-    // --- 로그인 관련 로직 ---
-
-    // 1. 로그인 버튼 클릭
-    loginBtn.addEventListener('click', async () => {
+    // --- 로그인 기능 ---
+    UI.loginBtn.addEventListener('click', async () => {
         try {
             await signInWithPopup(auth, provider);
         } catch (error) {
-            alert("로그인 중 오류가 발생했습니다: " + error.message);
+            alert("로그인 실패: " + error.message);
         }
     });
 
-    // 2. 로그아웃 버튼 클릭
-    logoutBtn.addEventListener('click', () => {
+    UI.logoutBtn.addEventListener('click', () => {
         signOut(auth);
     });
 
-    // 3. 인증 상태 감시 (로그인 상태 변화 시 실행)
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            // 로그인 된 상태
-            loggedOutUI.style.display = 'none';
-            loggedInUI.style.display = 'block';
-            mainContent.style.display = 'block';
-            userName.innerText = user.displayName;
-            userPhoto.src = user.photoURL;
+            UI.loggedOut.style.display = 'none';
+            UI.loggedIn.style.display = 'block';
+            UI.main.style.display = 'block';
+            UI.userName.innerText = user.displayName;
+            UI.userPhoto.src = user.photoURL;
         } else {
-            // 로그아웃 된 상태
-            loggedOutUI.style.display = 'block';
-            loggedInUI.style.display = 'none';
-            mainContent.style.display = 'none';
+            UI.loggedOut.style.display = 'block';
+            UI.loggedIn.style.display = 'none';
+            UI.main.style.display = 'none';
+            UI.result.style.display = 'none';
         }
     });
 
-    // --- 기행문 평가 로직 (기존 기능 유지) ---
-
-    window.evaluateTravelogue = async function() {
+    // --- AI 기행문 평가 기능 ---
+    UI.submitBtn.addEventListener('click', async () => {
         const apiKey = document.getElementById('apiKey').value.trim();
         const text = document.getElementById('travelogue').value.trim();
-        const submitBtn = document.getElementById('submitBtn');
-        const loadingIndicator = document.getElementById('loadingIndicator');
-        const resultSection = document.getElementById('resultSection');
 
-        if (!apiKey) {
-            alert('Google AI Studio API Key를 입력해주세요.');
-            return;
-        }
-        if (!text) {
-            alert('기행문 내용을 입력해주세요.');
-            return;
-        }
+        if (!apiKey) return alert('Google Gemini API Key를 입력해 주세요.');
+        if (!text) return alert('기행문 내용을 입력해 주세요.');
 
-        submitBtn.disabled = true;
-        loadingIndicator.style.display = 'block';
-        resultSection.style.display = 'none';
+        UI.submitBtn.disabled = true;
+        UI.loading.style.display = 'block';
+        UI.result.style.display = 'none';
 
         const prompt = `
-당신은 전문적인 글쓰기 강사이자 기행문 평가자입니다. 다음 기행문을 꼼꼼하게 읽고 분석해주세요.
+당신은 전문적인 글쓰기 강사이자 기행문 평가자입니다. 다음 기행문을 꼼꼼하게 읽고 분석해 주세요.
 반드시 아래의 JSON 구조에 맞추어 답변해야 합니다. 마크다운 기호 없이 순수한 JSON 텍스트만 반환하세요.
 
 {
@@ -319,22 +288,24 @@ ${text}
 `;
 
         try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+            // 가장 안정적인 1.5-flash 모델 사용
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    // 문제의 원인이었던 generationConfig 줄을 완전히 삭제했습니다.
-                    contents: [{ parts: [{ text: prompt }] }] 
+                    contents: [{ parts: [{ text: prompt }] }]
                 })
             });
 
             const data = await response.json();
-            if (!response.ok) throw new Error(data.error?.message || 'API 호출 오류');
+            
+            if (!response.ok) {
+                throw new Error(data.error?.message || 'API 호출 중 오류가 발생했습니다.');
+            }
 
-            // AI가 일반 텍스트 모드에서 ```json ... ``` 마크다운을 붙여서 대답할 경우를 대비해 텍스트 정제
+            // 마크다운 제거 및 JSON 파싱 로직 (안정성 강화)
             let rawText = data.candidates[0].content.parts[0].text;
             rawText = rawText.replace(/```json/gi, '').replace(/```/gi, '').trim();
-            
             const parsedData = JSON.parse(rawText);
 
             document.getElementById('resSpell').innerText = parsedData.spellCheck;
@@ -344,19 +315,16 @@ ${text}
             document.getElementById('resImpression').innerText = parsedData.impression;
             document.getElementById('resOverall').innerText = parsedData.overall;
 
-            resultSection.style.display = 'block';
+            UI.result.style.display = 'block';
         } catch (error) {
-            alert('평가 중 오류: ' + error.message);
+            alert('평가 중 오류가 발생했습니다: ' + error.message);
+            console.error(error);
         } finally {
-            submitBtn.disabled = false;
-            loadingIndicator.style.display = 'none';
+            UI.submitBtn.disabled = false;
+            UI.loading.style.display = 'none';
         }
-    };
-
-    // 버튼 이벤트 연결
-    document.getElementById('submitBtn').addEventListener('click', evaluateTravelogue);
+    });
 
 </script>
-
 </body>
 </html>
